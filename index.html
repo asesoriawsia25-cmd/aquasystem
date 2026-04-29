@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AquaSystem — WATER WESG</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;background:#F5F5F0;color:#1a1a1a;min-height:100vh}
+.hidden{display:none!important}
+input,select,textarea,button{font-family:inherit}
+.login-bg{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#E8F1FF 0%,#F5F5F0 100%);padding:1rem}
+.login-card{background:#fff;border:1px solid #E0DED6;border-radius:20px;padding:2.5rem;width:100%;max-width:360px;box-shadow:0 8px 40px rgba(24,95,165,.12)}
+.login-logo{text-align:center;font-size:26px;font-weight:700;color:#185FA5;margin-bottom:2px}
+.login-sub{text-align:center;font-size:13px;color:#888;margin-bottom:2rem}
+.err-box{background:#FCEBEB;color:#791F1F;border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:14px;border:1px solid #F09595}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.fg label{font-size:11px;color:#555;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.fg input,.fg select,.fg textarea{width:100%;padding:10px 14px;font-size:14px;border:1.5px solid #D0CEC6;border-radius:10px;background:#fff;color:#1a1a1a;outline:none;transition:border-color .2s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:#185FA5;box-shadow:0 0 0 3px rgba(24,95,165,.1)}
+.fg textarea{resize:vertical;min-height:72px}
+.hint{font-size:12px;color:#bbb;margin-bottom:16px;text-align:center;background:#F8F8F5;padding:8px 12px;border-radius:8px}
+.btn{padding:9px 20px;border-radius:10px;font-size:13px;cursor:pointer;border:1.5px solid #D0CEC6;background:#fff;color:#1a1a1a;font-family:inherit;transition:all .15s;font-weight:500}
+.btn:hover{background:#F5F5F0}
+.btn.bp{background:#185FA5;color:#fff;border-color:#185FA5}
+.btn.bp:hover{background:#0C447C}
+.btn.bs{background:#3B6D11;color:#EAF3DE;border-color:#3B6D11}
+.btn.bw{background:#854F0B;color:#FAEEDA;border-color:#854F0B}
+.btn.sm{padding:5px 14px;font-size:12px}
+.btn.w100{width:100%}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.app-wrap{min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:#fff;border-bottom:1.5px solid #E8E6DE;padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.brand{font-size:17px;font-weight:700;color:#185FA5}
+.role-pill{padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700}
+.rp-admin{background:#E6F1FB;color:#185FA5}
+.rp-chofer{background:#EAF3DE;color:#3B6D11}
+.rp-op{background:#FAEEDA;color:#854F0B}
+.nav{background:#fff;border-bottom:1.5px solid #E8E6DE;padding:.5rem 1.5rem;display:flex;gap:4px;overflow-x:auto}
+.nb{padding:7px 16px;border-radius:8px;font-size:13px;cursor:pointer;border:none;background:transparent;color:#666;font-family:inherit;white-space:nowrap;transition:all .15s;font-weight:500}
+.nb:hover{background:#F5F5F0;color:#1a1a1a}
+.nb.active{background:#E6F1FB;color:#185FA5;font-weight:700}
+.nb:disabled{opacity:.3;cursor:not-allowed}
+.content{padding:1.5rem;max-width:980px;margin:0 auto;width:100%}
+.panel{background:#fff;border:1.5px solid #E8E6DE;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,.03)}
+.ptitle{font-size:11px;font-weight:700;color:#999;margin-bottom:14px;text-transform:uppercase;letter-spacing:.06em}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1rem}
+.stat{background:#F8F8F5;border:1px solid #EEECEA;border-radius:12px;padding:14px 16px}
+.slbl{font-size:11px;color:#999;margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.sval{font-size:24px;font-weight:700}
+.sval.s{color:#3B6D11}.sval.d{color:#A32D2D}.sval.i{color:#185FA5}.sval.w{color:#854F0B}
+.fr{display:grid;gap:12px;margin-bottom:12px}
+.fr2{grid-template-columns:1fr 1fr}
+.fr3{grid-template-columns:1fr 1fr 1fr}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.bpend{background:#E6F1FB;color:#185FA5}.bruta{background:#FAEEDA;color:#854F0B}
+.bent{background:#EAF3DE;color:#3B6D11}.bcanc{background:#FCEBEB;color:#A32D2D}
+.bef{background:#EAF3DE;color:#3B6D11}.btr{background:#E6F1FB;color:#185FA5}
+.bcr{background:#FAEEDA;color:#854F0B}.bab{background:#EEEDFE;color:#534AB7}
+.bok{background:#EAF3DE;color:#3B6D11}.bbajo{background:#FAEEDA;color:#854F0B}.bagot{background:#FCEBEB;color:#A32D2D}
+.admin-lock{display:inline-flex;align-items:center;gap:3px;background:#FCEBEB;color:#791F1F;border-radius:20px;font-size:10px;padding:2px 10px;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:11px;font-weight:700;color:#999;text-align:left;padding:8px 10px;border-bottom:1.5px solid #EEECEA;text-transform:uppercase;letter-spacing:.04em}
+td{padding:9px 10px;border-bottom:1px solid #F4F2EE;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#FAFAF7}
+.ebtn{padding:4px 12px;font-size:11px;border-radius:7px;cursor:pointer;border:1px solid #D0CEC6;background:#fff;color:#555;font-family:inherit;font-weight:500}
+.ebtn:hover{background:#F5F5F0}
+.ebtn:disabled{opacity:.35;cursor:not-allowed}
+.ebtn.map{background:#E6F1FB;color:#185FA5;border-color:#185FA5;text-decoration:none;display:inline-flex;align-items:center;gap:3px}
+.ebtn.map:hover{background:#185FA5;color:#fff}
+.alert{border-radius:10px;padding:10px 16px;font-size:13px;margin-bottom:10px;border:1px solid transparent}
+.alert.warn{background:#FAEEDA;color:#633806;border-color:#E8D0A8}
+.alert.info{background:#E6F1FB;color:#0C447C;border-color:#B8D4F0}
+.alert.success{background:#EAF3DE;color:#27500A;border-color:#B8D4A0}
+.mbar-bg{background:#EEECEA;border-radius:20px;height:10px;overflow:hidden;margin:6px 0 4px}
+.mbar-fill{height:10px;border-radius:20px;transition:width .5s}
+.chat-win{background:#F5F5F0;border-radius:12px;padding:.85rem;min-height:320px;max-height:440px;overflow-y:auto;display:flex;flex-direction:column;gap:9px;margin-bottom:10px}
+.mrow{display:flex;align-items:flex-end;gap:8px}
+.mrow.u{flex-direction:row-reverse}
+.bub{max-width:80%;padding:10px 14px;border-radius:16px;font-size:13px;line-height:1.55}
+.bub.a{background:#fff;border:1px solid #E0DED6;border-radius:16px 16px 16px 4px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.bub.u{background:#185FA5;color:#fff;border-radius:16px 16px 4px 16px}
+.bub.sys{background:transparent;border:none;font-size:11px;color:#aaa;text-align:center;align-self:center;padding:2px}
+.av{width:30px;height:30px;border-radius:50%;background:#E6F1FB;color:#185FA5;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;border:1.5px solid #B8D4F0}
+.dots span{width:7px;height:7px;border-radius:50%;background:#B0AEA6;display:inline-block;animation:bnc 1.2s infinite;margin:0 2px}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes bnc{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+.quick{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.qbtn{padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid #D0CEC6;background:#fff;color:#555;font-family:inherit;font-weight:500}
+.qbtn:hover{background:#F5F5F0;border-color:#185FA5;color:#185FA5}
+.irow{display:flex;gap:8px}
+.irow input{flex:1;padding:9px 14px;font-size:13px;border:1.5px solid #D0CEC6;border-radius:24px;background:#fff;color:#1a1a1a;outline:none}
+.irow input:focus{border-color:#185FA5}
+.sbtn{padding:9px 20px;border-radius:24px;font-size:13px;cursor:pointer;border:none;background:#185FA5;color:#fff;font-family:inherit;font-weight:600}
+.sbtn:hover{background:#0C447C}
+.sbtn:disabled{opacity:.5;cursor:not-allowed}
+.modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:9999;padding:1rem}
+.modal-box{background:#fff;border-radius:18px;padding:1.75rem;width:100%;max-width:420px;max-height:92vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.15)}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:18px}
+.voucher-box{background:#F5F5F0;border-radius:10px;padding:14px;font-size:11px;font-family:'Courier New',monospace;white-space:pre-wrap;line-height:1.75;max-height:300px;overflow-y:auto;border:1px solid #E0DED6}
+.lock-wrap{background:#fff;border-radius:14px;padding:5rem 2rem;text-align:center;border:1.5px solid #E8E6DE}
+.gps-box{border:1.5px solid #D0CEC6;border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;background:#F8F8F5;margin-bottom:4px}
+.gps-status{font-size:12px;font-weight:600}
+.gps-status.ok{color:#3B6D11}.gps-status.err{color:#A32D2D}.gps-status.loading{color:#854F0B}
+.gps-coords{font-size:11px;font-family:monospace;color:#888}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#3B6D11;display:inline-block;animation:pulse 1.5s infinite;margin-right:4px}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+.acc-high{background:#EAF3DE;color:#3B6D11;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700}
+.acc-med{background:#FAEEDA;color:#854F0B;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700}
+.acc-low{background:#FCEBEB;color:#A32D2D;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700}
+@media(max-width:640px){.stats{grid-template-columns:1fr 1fr}.fr3{grid-template-columns:1fr 1fr}.content{padding:1rem}}
+</style>
+</head>
+<body>
+
+<div id="S-login" class="login-bg">
+  <div class="login-card">
+    <div class="login-logo">💧 AquaSystem</div>
+    <div class="login-sub">WATER WESG — Sistema integral de gestión</div>
+    <div class="err-box hidden" id="lerr">❌ Usuario o contraseña incorrectos.</div>
+    <div class="fg"><label>Usuario</label>
+      <select id="lu">
+        <option value="admin">admin — Administrador</option>
+        <option value="chofer1">chofer1 — Pedro Suárez (Chofer)</option>
+        <option value="chofer2">chofer2 — Luis Mora (Chofer)</option>
+        <option value="operador">operador — Operador de planta</option>
+      </select>
+    </div>
+    <div class="fg"><label>Contraseña</label>
+      <input type="password" id="lp" placeholder="Contraseña" onkeydown="if(event.key==='Enter')login()">
+    </div>
+    <div class="hint">admin/<b>admin</b> · chofer1/<b>chofer</b> · operador/<b>planta</b></div>
+    <button class="btn bp w100" onclick="login()">Ingresar al sistema →</button>
+  </div>
+</div>
+
+<div id="S-main" class="app-wrap hidden">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="brand">💧 AquaSystem</span>
+      <span class="role-pill" id="rpill"></span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:13px;color:#888" id="uname"></span>
+      <button class="btn sm" onclick="logout()">Salir</button>
+    </div>
+  </div>
+  <div class="nav" id="NAV"></div>
+  <div class="content" id="MOD"></div>
+</div>
+
+<div id="MODAL" class="hidden"></div>
+
+<script>
+var API_KEY = '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';
+
+var USERS={admin:{pass:'admin',rol:'admin',nombre:'Administrador'},chofer1:{pass:'chofer',rol:'chofer',nombre:'Pedro Suárez'},chofer2:{pass:'chofer',rol:'chofer',nombre:'Luis Mora'},operador:{pass:'planta',rol:'operador',nombre:'Operador de planta'}};
+var ACCESS={admin:['dashboard','clientes','inventario','pedidos','costos','agente'],chofer:['pedidos','agente'],operador:['inventario']};
+var MLABELS={dashboard:'🏠 Inicio',clientes:'👥 Clientes',inventario:'📦 Inventario',pedidos:'🚚 Pedidos',costos:'📊 Costos',agente:'🤖 Agente'};
+var ALL=['dashboard','clientes','inventario','pedidos','costos','agente'];
+var CU=null,isTyping=false,chatHist=[],callHist=[],callTimer=null,callSec=0;
+
+function defaultDB(){
+  return{
+    clientes:[
+      {id:1,nombre:'María González',cedula:'0912345001',tel:'0991234501',dir:'Cdla. Kennedy Norte, Av. 3ra',lat:-2.14523,lng:-79.90012,acc:8,consumo:8,deuda:12.50,pago:'credito'},
+      {id:2,nombre:'Carlos Peña',cedula:'0912345002',tel:'0991234502',dir:'Urdesa Central, Calle Ficus',lat:-2.17031,lng:-79.91245,acc:12,consumo:4,deuda:0,pago:'efectivo'},
+      {id:3,nombre:'Lucía Ramírez',cedula:'0912345003',tel:'0991234503',dir:'Samborondón, Vía a la Costa km 3',lat:null,lng:null,acc:null,consumo:12,deuda:0,pago:'transferencia'}
+    ],
+    productos:[
+      {key:'b20',nombre:'Bidón 20L',precio:2.50,stock:85,min:10},
+      {key:'b6',nombre:'Bidón 6L',precio:1.50,stock:40,min:8},
+      {key:'b1',nombre:'Botellón 1L',precio:0.75,stock:120,min:20}
+    ],
+    choferes:[{nombre:'Pedro Suárez',vacios:60,dev:38,desc:2},{nombre:'Luis Mora',vacios:45,dev:30,desc:0}],
+    pedidos:[],ventas:[],logCorr:[],agentPeds:[],agentRedirs:[],
+    costosProd:[
+      {nombre:'Agua (insumo)',tipo:'variable',monto:80},{nombre:'Electricidad',tipo:'fijo',monto:60},
+      {nombre:'Arriendo planta',tipo:'fijo',monto:200},{nombre:'Detergente/sanitizante',tipo:'variable',monto:30},
+      {nombre:'Tapas y etiquetas',tipo:'variable',monto:25},{nombre:'Sellos',tipo:'variable',monto:15},
+      {nombre:'Sueldo operador',tipo:'fijo',monto:450},{nombre:'Mantenimiento planta',tipo:'variable',monto:40}
+    ],
+    costosDist:[
+      {nombre:'Gasolina',tipo:'variable',monto:120},{nombre:'Mantenimiento vehículo',tipo:'variable',monto:60},
+      {nombre:'Repuestos',tipo:'variable',monto:30},{nombre:'Sueldo chofer',tipo:'fijo',monto:450}
+    ],
+    agentCfg:{nombre:'Sofía',tono:'amable',bienvenida:'¡Hola! Soy Sofía de WATER WESG 💧 ¿En qué te puedo ayudar hoy?',tiempo:'30 minutos',adminTel:'+593 99 999 9999',productos:'Bidón 20L: $2.50 · Bidón 6L: $1.50 · Botellón 1L: $0.75. Entregas a domicilio y en el trabajo. Cobertura: Guayaquil y Samborondón.'}
+  };
+}
+function loadDB(){try{var s=localStorage.getItem('aquasystem_ww');if(s){var p=JSON.parse(s);var d=defaultDB();Object.keys(d).forEach(function(k){if(!(k in p))p[k]=d[k];});return p;}}catch(e){}return defaultDB();}
+function save(){try{localStorage.setItem('aquasystem_ww',JSON.stringify(DB));}catch(e){}}
+var DB=loadDB();
+
+function hoy(){return new Date().toLocaleDateString('es-EC');}
+function hora(){return new Date().toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'});}
+function isAdmin(){return CU&&CU.rol==='admin';}
+function fmt(n){return parseFloat(n||0).toFixed(2);}
+function eid(id){return document.getElementById(id);}
+
+function login(){
+  var u=eid('lu').value,p=eid('lp').value,err=eid('lerr');
+  if(USERS[u]&&USERS[u].pass===p){
+    err.classList.add('hidden');
+    CU={id:u,rol:USERS[u].rol,nombre:USERS[u].nombre};
+    eid('S-login').classList.add('hidden');
+    eid('S-main').classList.remove('hidden');
+    buildNav();showMod(ACCESS[CU.rol][0]);
+  }else{err.classList.remove('hidden');eid('lp').value='';eid('lp').focus();}
+}
+function logout(){CU=null;chatHist=[];callHist=[];eid('S-main').classList.add('hidden');eid('S-login').classList.remove('hidden');eid('lp').value='';}
+function buildNav(){
+  var rmap={admin:'rp-admin',chofer:'rp-chofer',operador:'rp-op'};
+  var rlab={admin:'Administrador',chofer:'Chofer',operador:'Operador de planta'};
+  eid('rpill').className='role-pill '+rmap[CU.rol];
+  eid('rpill').textContent=rlab[CU.rol];
+  eid('uname').textContent=CU.nombre;
+  var acc=ACCESS[CU.rol];
+  eid('NAV').innerHTML=ALL.map(function(m){return'<button class="nb" id="nb-'+m+'" '+(acc.indexOf(m)>=0?'':'disabled')+' onclick="showMod(\''+m+'\'">'+MLABELS[m]+(acc.indexOf(m)>=0?'':' 🔒')+'</button>';}).join('');
+}
+function showMod(m){
+  document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('active');});
+  if(eid('nb-'+m))eid('nb-'+m).classList.add('active');
+  if(ACCESS[CU.rol].indexOf(m)<0){eid('MOD').innerHTML='<div class="lock-wrap"><div style="font-size:40px;margin-bottom:14px">🔒</div><div style="font-size:17px;font-weight:700;margin-bottom:8px">Acceso restringido</div><div style="color:#888">Solo el administrador puede acceder.</div></div>';return;}
+  ({dashboard:rDash,clientes:rClientes,inventario:rInventario,pedidos:rPedidos,costos:rCostos,agente:rAgente})[m]&&({dashboard:rDash,clientes:rClientes,inventario:rInventario,pedidos:rPedidos,costos:rCostos,agente:rAgente})[m]();
+}
+function modal(title,body,onOk,okLbl,cancelLbl){
+  var el=eid('MODAL');el.classList.remove('hidden');
+  el.innerHTML='<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal-box"><div class="modal-title">'+title+'</div>'+body+'<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px"><button class="btn sm" onclick="closeModal()">'+(cancelLbl||'Cancelar')+'</button>'+(onOk?'<button class="btn sm bp" onclick="window.__mok()">'+(okLbl||'Guardar')+'</button>':'')+'</div></div></div>';
+  window.__mok=onOk||closeModal;
+}
+function closeModal(){var el=eid('MODAL');el.classList.add('hidden');el.innerHTML='';window.__mok=null;}
+function lkBtn(lbl,fn){if(!isAdmin())return'<button class="ebtn" disabled>🔒 '+lbl+'</button>';return'<button class="ebtn" onclick="'+fn+'">'+lbl+'</button>';}
+function estBadge(e){var m={pendiente:'bpend','en-ruta':'bruta',entregado:'bent',cancelado:'bcanc'};return'<span class="badge '+(m[e]||'bpend')+'">'+e+'</span>';}
+
+// GPS helpers
+function mapsUrl(lat,lng){return'https://www.google.com/maps?q='+lat+','+lng+'&z=18';}
+function mapsNav(lat,lng){return'https://www.google.com/maps/dir/?api=1&destination='+lat+','+lng;}
+function accBadge(acc){if(!acc)return'';var cl=acc<=20?'acc-high':acc<=50?'acc-med':'acc-low';var lb=acc<=20?'Alta ±'+acc+'m':acc<=50?'Media ±'+acc+'m':'Baja ±'+acc+'m';return'<span class="'+cl+'">'+lb+'</span>';}
+function mapBtns(c){if(!c.lat||!c.lng)return'<span style="font-size:12px;color:#aaa">Sin GPS</span>';return'<a href="'+mapsUrl(c.lat,c.lng)+'" target="_blank" class="ebtn map">🗺 Ver</a> <a href="'+mapsNav(c.lat,c.lng)+'" target="_blank" class="ebtn map">🧭 Ir</a>';}
+
+// DASHBOARD
+function rDash(){
+  var tv=DB.ventas.filter(function(v){return v.fecha===hoy();}).reduce(function(s,v){return s+v.monto;},0);
+  var alerts=DB.productos.filter(function(p){return p.stock<=p.min;});
+  var deudores=DB.clientes.filter(function(c){return c.deuda>0;});
+  var activos=DB.pedidos.filter(function(p){return p.fecha===hoy()&&p.estado!=='entregado'&&p.estado!=='cancelado';}).length;
+  var pct=Math.min(100,Math.round(tv/100*100));
+  var barColor=pct>=100?'#3B6D11':pct>=70?'#854F0B':'#185FA5';
+  var ultP=DB.pedidos.length?DB.pedidos.slice(-4).reverse().map(function(p){return'<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #F4F2EE;font-size:13px"><span>'+p.cliente+'</span>'+estBadge(p.estado)+'</div>';}).join(''):'<div style="color:#aaa;text-align:center;padding:1.5rem">Sin pedidos aún</div>';
+  eid('MOD').innerHTML='<div class="stats"><div class="stat"><div class="slbl">Ventas hoy</div><div class="sval s">$'+fmt(tv)+'</div></div><div class="stat"><div class="slbl">Pedidos activos</div><div class="sval i">'+activos+'</div></div><div class="stat"><div class="slbl">Con deuda</div><div class="sval d">'+deudores.length+'</div></div><div class="stat"><div class="slbl">Alertas stock</div><div class="sval w">'+alerts.length+'</div></div></div>'+alerts.map(function(p){return'<div class="alert warn">⚠️ Stock bajo: <strong>'+p.nombre+'</strong> — '+p.stock+' uds. (mín. '+p.min+')</div>';}).join('')+'<div class="panel"><div class="ptitle">Meta del día — $100.00</div><div style="display:flex;justify-content:space-between;font-size:12px;color:#999;margin-bottom:3px"><span></span><span>$'+fmt(tv)+' / $100.00</span></div><div class="mbar-bg"><div class="mbar-fill" style="width:'+pct+'%;background:'+barColor+'"></div></div><div style="font-size:12px;color:#888;margin-top:5px">'+(pct>=100?'✅ Meta alcanzada — excedente: $'+fmt(tv-100):'Faltan $'+fmt(100-tv)+' para la meta')+'</div></div><div class="fr fr2"><div class="panel"><div class="ptitle">Últimos pedidos</div>'+ultP+'</div><div class="panel"><div class="ptitle">Accesos rápidos</div><div style="display:flex;flex-direction:column;gap:8px"><button class="btn bp" onclick="showMod(\'pedidos\')">+ Nuevo pedido</button><button class="btn" onclick="showMod(\'inventario\')">📦 Inventario</button><button class="btn" onclick="showMod(\'agente\')">🤖 Agente virtual</button>'+(isAdmin()?'<button class="btn" onclick="showMod(\'costos\')">📊 Reporte</button>':'')+'</div></div></div>';
+}
+
+// CLIENTES con GPS
+function rClientes(){
+  var rows=DB.clientes.map(function(c){
+    return'<tr><td><strong>'+c.nombre+'</strong><div style="font-size:11px;color:#888">'+c.cedula+'</div></td><td style="font-size:12px">'+c.tel+'</td><td style="font-size:12px;color:#666">'+c.dir+'</td><td style="color:'+(c.deuda>0?'#A32D2D':'#3B6D11')+';font-weight:700">$'+fmt(c.deuda)+'</td><td>'+accBadge(c.acc)+'</td><td>'+mapBtns(c)+'</td><td>'+lkBtn('Editar','editCli('+c.id+')')+'</td></tr>';
+  }).join('');
+  eid('MOD').innerHTML=(isAdmin()?'<div class="panel"><div class="ptitle">Registrar nuevo cliente</div><div class="fr fr3"><div class="fg"><label>Nombre completo *</label><input id="nc-n" placeholder="Ej: Juan Pérez"></div><div class="fg"><label>Cédula *</label><input id="nc-c" placeholder="0912345678"></div><div class="fg"><label>Teléfono / WhatsApp</label><input id="nc-t" placeholder="0991234567"></div></div><div class="fr fr2"><div class="fg"><label>Dirección / Referencia</label><input id="nc-d" placeholder="Frente a la farmacia..."></div><div class="fg"><label>Consumo (bid/mes)</label><input id="nc-k" type="number" value="0" min="0"></div></div><div class="fg" style="margin-bottom:12px"><label>Ubicación GPS <span style="font-weight:400;text-transform:none;font-size:10px;color:#aaa">(captura automática)</span></label><div class="gps-box" id="gps-box"><span style="font-size:20px">📍</span><div style="flex:1"><div class="gps-status loading" id="gps-status">Presiona el botón para capturar GPS</div><div class="gps-coords hidden" id="gps-coords"></div></div><button class="btn sm" onclick="capGPS()" id="gps-btn">📡 Capturar</button><a href="#" class="ebtn map" id="gps-map-btn" style="display:none" target="_blank">🗺 Ver</a></div><input type="hidden" id="nc-lat"><input type="hidden" id="nc-lng"><input type="hidden" id="nc-acc"></div><div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn" onclick="capGPS()">📡 GPS</button><button class="btn bp sm" onclick="addCli()">Guardar cliente</button></div></div>':'')+'<div class="panel"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div class="ptitle" style="margin:0">Clientes ('+DB.clientes.length+')</div>'+(isAdmin()?'':'<span class="admin-lock">🔒 Solo admin edita</span>')+'</div><table><thead><tr><th style="width:20%">Nombre / Cédula</th><th style="width:14%">Teléfono</th><th style="width:24%">Dirección</th><th style="width:10%">Deuda</th><th style="width:12%">Precisión</th><th style="width:12%">Mapa</th><th style="width:8%"></th></tr></thead><tbody>'+(rows||'<tr><td colspan="7" style="text-align:center;color:#aaa;padding:2rem">Sin clientes</td></tr>')+'</tbody></table></div>';
+}
+
+function capGPS(){
+  var btn=eid('gps-btn'),status=eid('gps-status'),coords=eid('gps-coords'),mapBtn=eid('gps-map-btn');
+  if(!navigator.geolocation){status.className='gps-status err';status.textContent='❌ GPS no disponible en este navegador.';return;}
+  btn.disabled=true;btn.textContent='⏳ Capturando...';
+  status.className='gps-status loading';
+  status.innerHTML='<span class="live-dot"></span> Obteniendo ubicación GPS...';
+  coords.classList.add('hidden');
+  navigator.geolocation.getCurrentPosition(
+    function(pos){
+      var lat=pos.coords.latitude,lng=pos.coords.longitude,acc=Math.round(pos.coords.accuracy);
+      eid('nc-lat').value=lat;eid('nc-lng').value=lng;eid('nc-acc').value=acc;
+      var acl=acc<=20?'acc-high':acc<=50?'acc-med':'acc-low';
+      var alb=acc<=20?'Alta':acc<=50?'Media':'Baja';
+      status.className='gps-status ok';
+      status.innerHTML='✅ GPS capturado <span class="'+acl+'">Precisión '+alb+' ±'+acc+'m</span>';
+      coords.classList.remove('hidden');
+      coords.textContent='Lat: '+lat.toFixed(6)+' · Lng: '+lng.toFixed(6);
+      mapBtn.href=mapsUrl(lat,lng);mapBtn.style.display='';
+      btn.disabled=false;btn.textContent='🔄 Actualizar';
+    },
+    function(err){
+      var msgs={1:'Permiso denegado. Activa el GPS en tu navegador.',2:'GPS no disponible. Sal al exterior.',3:'Tiempo agotado. Intenta de nuevo.'};
+      status.className='gps-status err';status.textContent='❌ '+(msgs[err.code]||'Error GPS');
+      btn.disabled=false;btn.textContent='📡 Reintentar';
+    },
+    {enableHighAccuracy:true,timeout:15000,maximumAge:0}
+  );
+}
+
+function addCli(){
+  var n=eid('nc-n').value.trim(),c=eid('nc-c').value.trim();
+  if(!n||!c){alert('⚠️ Nombre y cédula son obligatorios.');return;}
+  var lat=eid('nc-lat').value,lng=eid('nc-lng').value,acc=eid('nc-acc').value;
+  if(!lat&&!confirm('No se capturó GPS. ¿Guardar sin ubicación?\nPodrás capturarla cuando el chofer esté en la dirección del cliente.')){return;}
+  DB.clientes.push({id:Date.now(),nombre:n,cedula:c,tel:eid('nc-t').value,dir:eid('nc-d').value,lat:lat?parseFloat(lat):null,lng:lng?parseFloat(lng):null,acc:acc?parseInt(acc):null,consumo:parseInt(eid('nc-k').value)||0,deuda:0,pago:'efectivo'});
+  save();rClientes();
+}
+
+function editCli(id){
+  var c=DB.clientes.find(function(x){return x.id===id;});
+  modal('Editar cliente: '+c.nombre,
+    '<div class="fg"><label>Nombre</label><input id="ec-n" value="'+c.nombre+'"></div>'
+    +'<div class="fg"><label>Teléfono</label><input id="ec-t" value="'+(c.tel||'')+'"></div>'
+    +'<div class="fg"><label>Dirección</label><input id="ec-d" value="'+(c.dir||'')+'"></div>'
+    +'<div class="fg"><label>Deuda ($)</label><input id="ec-deu" type="number" value="'+c.deuda+'" step="0.01"></div>'
+    +'<div class="fg"><label>Motivo de corrección *</label><input id="ec-m" placeholder="Ej: error en registro anterior"></div>'
+    +(c.lat?'<div class="alert info">📍 GPS actual: '+c.lat.toFixed(5)+', '+c.lng.toFixed(5)+' — <a href="'+mapsUrl(c.lat,c.lng)+'" target="_blank">Ver en mapa</a></div>':'<div class="alert warn">Sin GPS registrado.</div>'),
+  function(){
+    var m=eid('ec-m').value.trim();if(!m){alert('Indica el motivo.');return;}
+    DB.logCorr.push({fecha:hoy(),user:CU.nombre,tipo:'Cliente',det:c.nombre+': deuda $'+c.deuda+'→$'+eid('ec-deu').value,motivo:m});
+    c.nombre=eid('ec-n').value;c.tel=eid('ec-t').value;c.dir=eid('ec-d').value;c.deuda=parseFloat(eid('ec-deu').value)||0;
+    save();closeModal();rClientes();
+  });
+}
+
+// INVENTARIO
+function rInventario(){
+  var alerts=DB.productos.filter(function(p){return p.stock<=p.min;});
+  eid('MOD').innerHTML=alerts.map(function(p){return'<div class="alert warn">⚠️ Stock bajo: <strong>'+p.nombre+'</strong> — '+p.stock+' uds.</div>';}).join('')
+    +'<div class="panel"><div class="ptitle">Registrar producción</div><div class="fr fr3"><div class="fg"><label>Producto</label><select id="ip-p">'+DB.productos.map(function(p,i){return'<option value="'+i+'">'+p.nombre+'</option>';}).join('')+'</select></div><div class="fg"><label>Cantidad</label><input id="ip-c" type="number" min="1" placeholder="Ej: 50"></div><div class="fg"><label>Observación</label><input id="ip-o" placeholder="turno mañana..."></div></div><div style="display:flex;justify-content:flex-end"><button class="btn bs" onclick="regProd()">✓ Registrar producción</button></div></div>'
+    +'<div class="panel"><div class="ptitle">Envases retornables</div><div class="fr fr3"><div class="fg"><label>Chofer</label><select id="ie-c">'+DB.choferes.map(function(c,i){return'<option value="'+i+'">'+c.nombre+'</option>';}).join('')+'</select></div><div class="fg"><label>Recibidos vacíos</label><input id="ie-r" type="number" value="0"></div><div class="fg"><label>Descartados</label><input id="ie-d" type="number" value="0"></div></div><div style="font-size:12px;color:#888;margin-bottom:8px">Los descartados se descontarán del saldo del chofer automáticamente.</div><div style="display:flex;justify-content:flex-end"><button class="btn bw" onclick="regEnv()">Registrar envases</button></div></div>'
+    +'<div class="panel"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div class="ptitle" style="margin:0">Stock actual</div>'+(isAdmin()?'':'<span class="admin-lock">🔒 Correcciones: solo admin</span>')+'</div><table><thead><tr><th style="width:33%">Producto</th><th>Stock</th><th>Precio</th><th>Estado</th><th></th></tr></thead><tbody>'+DB.productos.map(function(p,i){var st=p.stock<=0?'bagot':p.stock<=p.min?'bbajo':'bok';var sl=p.stock<=0?'Agotado':p.stock<=p.min?'Stock bajo':'OK';return'<tr><td><strong>'+p.nombre+'</strong></td><td>'+p.stock+'</td><td>$'+fmt(p.precio)+'</td><td><span class="badge '+st+'">'+sl+'</span></td><td>'+lkBtn('Corregir','corrStock('+i+')')+'</td></tr>';}).join('')+'</tbody></table></div>'
+    +'<div class="panel"><div class="ptitle">Envases por chofer</div><table><thead><tr><th>Chofer</th><th>Entregados</th><th>Devueltos</th><th>Descartados</th><th>Saldo</th></tr></thead><tbody>'+DB.choferes.map(function(c){return'<tr><td><strong>'+c.nombre+'</strong></td><td>'+c.vacios+'</td><td>'+c.dev+'</td><td><span class="badge '+(c.desc>0?'bcr':'bok')+'">'+c.desc+'</span></td><td>'+(c.vacios-c.dev-c.desc)+' pend.</td></tr>';}).join('')+'</tbody></table></div>';
+}
+function regProd(){var i=parseInt(eid('ip-p').value),c=parseInt(eid('ip-c').value)||0;if(!c){alert('Cantidad inválida.');return;}DB.productos[i].stock+=c;save();alert('✅ +'+c+' '+DB.productos[i].nombre+'. Stock: '+DB.productos[i].stock);eid('ip-c').value='';rInventario();}
+function regEnv(){var ci=parseInt(eid('ie-c').value),r=parseInt(eid('ie-r').value)||0,d=parseInt(eid('ie-d').value)||0;if(!r){alert('Ingresa cantidad recibida.');return;}DB.choferes[ci].vacios+=r;DB.choferes[ci].dev+=(r-d);DB.choferes[ci].desc+=d;save();alert('✅ Aptos: '+(r-d)+' / Descartados: '+d);rInventario();}
+function corrStock(i){var p=DB.productos[i];modal('Corregir stock: '+p.nombre,'<div class="fg"><label>Stock actual</label><input disabled value="'+p.stock+'"></div><div class="fg"><label>Nuevo stock</label><input id="cs-v" type="number" value="'+p.stock+'"></div><div class="fg"><label>Motivo *</label><input id="cs-m" placeholder="Ej: error de conteo"></div>',function(){var m=eid('cs-m').value.trim();if(!m){alert('Indica el motivo.');return;}var nv=parseInt(eid('cs-v').value)||0;DB.logCorr.push({fecha:hoy(),user:CU.nombre,tipo:'Stock',det:p.nombre+': '+p.stock+'→'+nv,motivo:m});p.stock=nv;save();closeModal();rInventario();});}
+
+// PEDIDOS
+function rPedidos(){
+  var rows=DB.pedidos.map(function(p){
+    var tot=p.items.reduce(function(s,i){return s+i.precio*i.cant;},0);
+    var acc='';
+    if(p.estado!=='entregado'&&p.estado!=='cancelado'){
+      if(p.estado==='pendiente')acc+='<button class="ebtn" onclick="cambEst(\''+p.id+'\',\'en-ruta\')" style="color:#854F0B;border-color:#D4A574">En ruta</button> ';
+      if(p.estado==='en-ruta')acc+='<button class="ebtn" onclick="regEnt(\''+p.id+'\')" style="color:#3B6D11;border-color:#A8C888">✓ Entregar</button> ';
+    }
+    acc+=lkBtn('Corregir','corrPed(\''+p.id+'\')');
+    // boton mapa del cliente
+    var cli=DB.clientes.find(function(c){return c.nombre===p.cliente;});
+    var mapLink=cli&&cli.lat?'<a href="'+mapsNav(cli.lat,cli.lng)+'" target="_blank" class="ebtn map" title="Navegar a este cliente">🧭</a> ':'';
+    return'<tr><td><strong>'+p.id+'</strong></td><td>'+p.cliente+(p.deudaA>0?' <span style="color:#A32D2D;font-size:10px">($'+fmt(p.deudaA)+')</span>':'')+'</td><td style="font-size:12px">'+p.items.map(function(i){return i.cant+'×'+i.nombre;}).join(', ')+'</td><td>'+estBadge(p.estado)+'</td><td><strong>$'+fmt(tot)+'</strong></td><td style="white-space:nowrap">'+mapLink+acc+'</td></tr>';
+  }).join('');
+  eid('MOD').innerHTML='<div class="panel"><div class="ptitle">Nuevo pedido</div><div class="fr fr3"><div class="fg"><label>Cliente</label><select id="np-c" onchange="autoDir()">'+DB.clientes.map(function(c,i){return'<option value="'+i+'">'+c.nombre+'</option>';}).join('')+'</select></div><div class="fg"><label>Producto</label><select id="np-p">'+DB.productos.map(function(p,i){return'<option value="'+i+'">'+p.nombre+' $'+fmt(p.precio)+'</option>';}).join('')+'</select></div><div class="fg"><label>Cantidad</label><input id="np-q" type="number" value="1" min="1"></div></div><div class="fr fr3"><div class="fg"><label>Dirección</label><input id="np-d" value="'+(DB.clientes[0]?DB.clientes[0].dir:'')+'"></div><div class="fg"><label>Tipo</label><select id="np-t"><option value="domicilio">Domicilio</option><option value="trabajo">Trabajo</option><option value="planta">En planta</option></select></div><div class="fg"><label>Notas</label><input id="np-n" placeholder="Ej: dejar en portería"></div></div><div style="display:flex;justify-content:flex-end"><button class="btn bp sm" onclick="crearPed()">Crear pedido</button></div></div><div class="panel"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div class="ptitle" style="margin:0">Pedidos ('+DB.pedidos.length+')</div>'+(isAdmin()?'':'<span class="admin-lock">🔒 Correcciones: solo admin</span>')+'</div><table><thead><tr><th style="width:10%">ID</th><th style="width:20%">Cliente</th><th style="width:22%">Productos</th><th style="width:12%">Estado</th><th style="width:10%">Total</th><th style="width:26%">Acciones</th></tr></thead><tbody>'+(rows||'<tr><td colspan="6" style="text-align:center;color:#aaa;padding:2rem">Sin pedidos aún</td></tr>')+'</tbody></table></div>';
+}
+function autoDir(){var c=DB.clientes[parseInt(eid('np-c').value)];if(c&&eid('np-d'))eid('np-d').value=c.dir||'';}
+function crearPed(){
+  var ci=parseInt(eid('np-c').value),pi=parseInt(eid('np-p').value),q=parseInt(eid('np-q').value)||1;
+  var cli=DB.clientes[ci],pr=DB.productos[pi];
+  if(!cli||!pr){alert('Selecciona cliente y producto.');return;}
+  var id='PED-'+String(DB.pedidos.length+1).padStart(3,'0');
+  DB.pedidos.push({id:id,cliente:cli.nombre,tel:cli.tel||'',deudaA:cli.deuda,dir:eid('np-d').value||cli.dir,tipo:eid('np-t').value,chofer:CU.rol==='chofer'?CU.nombre:'Pedro Suárez',estado:'pendiente',items:[{nombre:pr.nombre,cant:q,precio:pr.precio}],pago:null,monto:null,abono:0,notas:eid('np-n').value,fecha:hoy()});
+  save();rPedidos();
+}
+function cambEst(id,st){var p=DB.pedidos.find(function(x){return x.id===id;});if(p){p.estado=st;save();rPedidos();}}
+function regEnt(id){
+  var p=DB.pedidos.find(function(x){return x.id===id;});
+  var tot=p.items.reduce(function(s,i){return s+i.precio*i.cant;},0);
+  var cli=DB.clientes.find(function(c){return c.nombre===p.cliente;});
+  var mapInfo=cli&&cli.lat?'<div class="alert info">📍 <a href="'+mapsNav(cli.lat,cli.lng)+'" target="_blank" style="color:#185FA5;font-weight:600">Abrir navegación a '+p.cliente+'</a></div>':'';
+  modal('Registrar entrega: '+p.id,
+    mapInfo+'<div class="alert info">Cliente: <strong>'+p.cliente+'</strong>'+(p.deudaA>0?' · Deuda: <strong style="color:#A32D2D">$'+fmt(p.deudaA)+'</strong>':'')+'</div>'
+    +'<div class="fg"><label>Método de pago</label><select id="re-pg"><option>Efectivo</option><option>Transferencia</option><option>Crédito (fiado)</option></select></div>'
+    +'<div class="fg"><label>Monto cobrado ($)</label><input id="re-m" type="number" value="'+fmt(tot)+'" step="0.01"></div>'
+    +'<div class="fg"><label>Abono a deuda anterior ($)</label><input id="re-a" type="number" value="0" step="0.01"></div>'
+    +'<div class="fg"><label>Envases devueltos</label><input id="re-dev" type="number" value="0"></div>',
+  function(){
+    p.estado='entregado';p.pago=eid('re-pg').value;p.monto=parseFloat(eid('re-m').value)||0;p.abono=parseFloat(eid('re-a').value)||0;
+    var dev=parseInt(eid('re-dev').value)||0;var dr=Math.max(0,p.deudaA-p.abono);
+    if(cli)cli.deuda=dr;
+    DB.ventas.push({cliente:p.cliente,monto:p.monto,pago:p.pago.toLowerCase().split(' ')[0],hora:hora(),fecha:hoy()});
+    save();closeModal();mostrarVoucher(p,dev);rPedidos();
+  });
+}
+function mostrarVoucher(p,dev){
+  var tot=p.items.reduce(function(s,i){return s+i.precio*i.cant;},0);
+  var dr=Math.max(0,p.deudaA-(p.abono||0));
+  var txt='========================================\n        WATER WESG — Comprobante\n========================================\nPedido    : '+p.id+'\nFecha     : '+p.fecha+'\nCliente   : '+p.cliente+'\nDirección : '+p.dir+'\nChofer    : '+p.chofer+'\n----------------------------------------\nPRODUCTOS ENTREGADOS:\n'+p.items.map(function(i){return'  '+i.nombre.padEnd(14,' ')+' x'+i.cant+'   $'+fmt(i.precio*i.cant);}).join('\n')+'\n----------------------------------------\nSubtotal  : $'+fmt(tot)+'\n'+(p.deudaA>0?'Deuda ant.: $'+fmt(p.deudaA)+'\nAbono     : $'+fmt(p.abono||0)+'\nSaldo     : $'+fmt(dr)+'\n':'')+'Cobrado   : $'+fmt(p.monto||0)+'\nPago      : '+p.pago+'\n'+(dev>0?'Env. devueltos: '+dev+'\n':'')+'========================================\n'+(dr>0?'  Saldo pendiente: $'+fmt(dr)+'\n  Por favor regulariza tu cuenta.':'  ¡Gracias, cuenta al día! ✅')+'\n========================================\n    ¡Gracias por elegir WATER WESG!\n========================================';
+  var tel=(p.tel||'').replace(/\D/g,'');var num=tel.startsWith('0')?'593'+tel.slice(1):tel;
+  modal('✅ Voucher generado','<div class="voucher-box">'+txt+'</div>',function(){window.open('https://wa.me/'+num+'?text='+encodeURIComponent(txt),'_blank');closeModal();},'📱 Enviar WhatsApp','Cerrar');
+}
+function corrPed(id){
+  var p=DB.pedidos.find(function(x){return x.id===id;});
+  modal('Corregir: '+p.id,'<div class="fg"><label>Estado</label><select id="cp-s">'+['pendiente','en-ruta','entregado','cancelado'].map(function(s){return'<option '+(p.estado===s?'selected':'')+'>'+s+'</option>';}).join('')+'</select></div><div class="fg"><label>Monto ($)</label><input id="cp-m" type="number" value="'+(p.monto||0)+'" step="0.01"></div><div class="fg"><label>Motivo *</label><input id="cp-mot" placeholder="Ej: error en registro"></div>',
+  function(){var m=eid('cp-mot').value.trim();if(!m){alert('Indica el motivo.');return;}DB.logCorr.push({fecha:hoy(),user:CU.nombre,tipo:'Pedido',det:p.id+': '+p.estado+'→'+eid('cp-s').value,motivo:m});p.estado=eid('cp-s').value;p.monto=parseFloat(eid('cp-m').value)||0;save();closeModal();rPedidos();});
+}
+
+// COSTOS
+function rCostos(){
+  var hoyV=DB.ventas.filter(function(v){return v.fecha===hoy();});
+  var tv=hoyV.reduce(function(s,v){return s+v.monto;},0);
+  var tc=[...DB.costosProd,...DB.costosDist].reduce(function(s,c){return s+c.monto;},0)/26;
+  var util=tv-tc,pct=Math.min(100,Math.round(tv/100*100));
+  var ef=hoyV.filter(function(v){return v.pago==='efectivo';}).reduce(function(s,v){return s+v.monto;},0);
+  var tr=hoyV.filter(function(v){return v.pago==='transferencia';}).reduce(function(s,v){return s+v.monto;},0);
+  var cr=hoyV.filter(function(v){return v.pago==='credito'||v.pago==='crédito';}).reduce(function(s,v){return s+v.monto;},0);
+  var ab=hoyV.filter(function(v){return v.pago==='abono';}).reduce(function(s,v){return s+v.monto;},0);
+  var vR=hoyV.map(function(v,i){var ri=DB.ventas.indexOf(v);return'<tr><td><strong>'+v.cliente+'</strong></td><td>$'+fmt(v.monto)+'</td><td><span class="badge b'+v.pago+'">'+v.pago+'</span></td><td style="color:#999">'+v.hora+'</td><td>'+lkBtn('Corregir','corrVenta('+ri+')')+'</td></tr>';}).join('');
+  var lR=DB.logCorr.length?DB.logCorr.slice().reverse().map(function(l){return'<tr><td>'+l.fecha+'</td><td><strong>'+l.user+'</strong></td><td><span class="badge bpend">'+l.tipo+'</span></td><td style="font-size:12px">'+l.det+'</td><td style="font-size:12px;font-style:italic;color:#888">'+l.motivo+'</td></tr>';}).join(''):'<tr><td colspan="5" style="text-align:center;color:#aaa;padding:1.5rem">Sin correcciones.</td></tr>';
+  eid('MOD').innerHTML='<div class="stats"><div class="stat"><div class="slbl">Ventas hoy</div><div class="sval s">$'+fmt(tv)+'</div></div><div class="stat"><div class="slbl">Costos</div><div class="sval d">$'+fmt(tc)+'</div></div><div class="stat"><div class="slbl">Utilidad</div><div class="sval '+(util>=0?'i':'d')+'">$'+fmt(util)+'</div></div><div class="stat"><div class="slbl">Meta</div><div class="sval '+(pct>=100?'s':'w')+'">'+pct+'%</div></div></div><div class="panel"><div class="ptitle">Meta diaria — $100</div><div style="display:flex;justify-content:space-between;font-size:12px;color:#999;margin-bottom:3px"><span></span><span>$'+fmt(tv)+' / $100.00</span></div><div class="mbar-bg"><div class="mbar-fill" style="width:'+pct+'%;background:'+(pct>=100?'#3B6D11':pct>=70?'#854F0B':'#185FA5')+'"></div></div><div style="font-size:12px;color:#888;margin-top:5px">'+(pct>=100?'✅ Meta alcanzada. Excedente: $'+fmt(tv-100)+' — bono chofer 7%: $'+fmt((tv-100)*0.07):'Faltan $'+fmt(100-tv)+' para la meta')+'</div></div><div class="panel"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div class="ptitle" style="margin:0">Ventas del día — cuadre de caja</div>'+(isAdmin()?'<button class="btn sm bp" onclick="genReporte()">📄 Reporte</button>':'')+'</div><table><thead><tr><th style="width:28%">Cliente</th><th style="width:14%">Monto</th><th style="width:18%">Método</th><th style="width:14%">Hora</th><th style="width:26%"></th></tr></thead><tbody>'+(vR||'<tr><td colspan="5" style="text-align:center;color:#aaa;padding:1.5rem">Sin ventas hoy</td></tr>')+'</tbody></table><div style="display:flex;justify-content:flex-end;gap:14px;margin-top:10px;padding-top:10px;border-top:1px solid #F4F2EE;font-size:12px"><span>Efectivo:<strong style="color:#3B6D11"> $'+fmt(ef)+'</strong></span><span>Transf.:<strong style="color:#185FA5"> $'+fmt(tr)+'</strong></span><span>Crédito:<strong style="color:#854F0B"> $'+fmt(cr)+'</strong></span><span>Abonos:<strong> $'+fmt(ab)+'</strong></span></div></div><div class="panel"><div class="ptitle">Bitácora de correcciones <span class="admin-lock">🔒 Solo admin</span></div><table><thead><tr><th style="width:12%">Fecha</th><th style="width:14%">Admin</th><th style="width:12%">Tipo</th><th style="width:34%">Detalle</th><th style="width:28%">Motivo</th></tr></thead><tbody>'+lR+'</tbody></table></div>';
+}
+function corrVenta(i){var v=DB.ventas[i];if(!v)return;modal('Corregir venta: '+v.cliente,'<div class="fg"><label>Monto actual</label><input disabled value="$'+fmt(v.monto)+'"></div><div class="fg"><label>Monto correcto ($)</label><input id="cv-m" type="number" value="'+v.monto+'" step="0.01"></div><div class="fg"><label>Motivo *</label><input id="cv-mot" placeholder="Ej: monto incorrecto"></div>',function(){var m=eid('cv-mot').value.trim();if(!m){alert('Indica el motivo.');return;}DB.logCorr.push({fecha:hoy(),user:CU.nombre,tipo:'Venta',det:v.cliente+': $'+v.monto+'→$'+eid('cv-m').value,motivo:m});v.monto=parseFloat(eid('cv-m').value)||0;save();closeModal();rCostos();});}
+function genReporte(){
+  var hoyV=DB.ventas.filter(function(v){return v.fecha===hoy();});
+  var tv=hoyV.reduce(function(s,v){return s+v.monto;},0);
+  var ef=hoyV.filter(function(v){return v.pago==='efectivo';}).reduce(function(s,v){return s+v.monto;},0);
+  var tr=hoyV.filter(function(v){return v.pago==='transferencia';}).reduce(function(s,v){return s+v.monto;},0);
+  var cr=hoyV.filter(function(v){return v.pago==='credito'||v.pago==='crédito';}).reduce(function(s,v){return s+v.monto;},0);
+  var ab=hoyV.filter(function(v){return v.pago==='abono';}).reduce(function(s,v){return s+v.monto;},0);
+  var tc=[...DB.costosProd,...DB.costosDist].reduce(function(s,c){return s+c.monto;},0)/26;
+  var util=tv-tc,exc=Math.max(0,tv-100);
+  var txt='=============================================\n     WATER WESG — Reporte de cierre\n     '+hoy()+' — '+hora()+'\n=============================================\nVENTAS DEL DÍA\n  Total ventas        : $'+fmt(tv)+'\n  - Efectivo          : $'+fmt(ef)+'\n  - Transferencia     : $'+fmt(tr)+'\n  - Crédito (fiado)   : $'+fmt(cr)+'\n  - Abonos            : $'+fmt(ab)+'\n---------------------------------------------\nCOSTOS DEL DÍA (prorrateo /26) : $'+fmt(tc)+'\nUTILIDAD DEL DÍA               : $'+fmt(util)+'\n---------------------------------------------\nMETA DIARIA ($100)  : '+(tv>=100?'ALCANZADA ✓':'NO ALCANZADA')+'\n'+(exc>0?'Excedente           : $'+fmt(exc)+'\nBono chofer (7%)    : $'+fmt(exc*0.07)+'\n':'')+'=============================================\nGenerado: '+new Date().toLocaleString('es-EC')+'\nAquaSystem — WATER WESG\n=============================================';
+  modal('📄 Reporte del día','<div class="voucher-box">'+txt+'</div>',function(){if(navigator.clipboard)navigator.clipboard.writeText(txt).then(function(){alert('✅ Copiado.');}).catch(function(){alert('Copia manualmente con Ctrl+C.');});closeModal();},'📋 Copiar','Cerrar');
+}
+
+// AGENTE VIRTUAL
+function buildSys(canal){
+  var cfg=DB.agentCfg;
+  return'Eres '+cfg.nombre+', la asistente virtual de WATER WESG, empresa de agua purificada en Guayaquil, Ecuador. Eres sumamente cálida, empática, paciente y muy humana. Hablas español ecuatoriano natural y cercano. Nunca suenas como un robot ni como un menú de opciones.\nTono: '+cfg.tono+'. Tiempo de entrega: '+cfg.tiempo+'.\nProductos y precios: '+cfg.productos+'\nFUNCIONES:\n1. Tomar pedidos: pregunta cuántos bidones y de qué tamaño, si la entrega es a domicilio o trabajo. Confirma dirección y tiempo. Al confirmar incluye: PEDIDO_CONFIRMADO|cliente:[nombre]|producto:[desc]|cantidad:[n]|direccion:[dir]|total:[$x.xx]\n2. Resolver dudas sobre precios, horarios y cobertura.\n3. Si el cliente pide hablar con el administrador o dueño, o hay reclamo grave, responde muy cortésmente y añade: REDIRIGIR_ADMIN|motivo:[motivo]\n'+(canal==='llamada'?'4. Estás en llamada telefónica. Habla claro, pausado y cálido. Si se despide, despídete con calidez.':'4. Estás en chat de WhatsApp. Puedes usar emojis con moderación.')+'\nREGLAS: máximo 3-4 oraciones por respuesta. No inventes información. Sé breve pero cálido y humano.';
+}
+async function agentCall(msg,hist,canal){
+  try{
+    var msgs=hist.map(function(h){return{role:h.r,content:h.c};});
+    msgs.push({role:'user',content:msg});
+    var res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,system:buildSys(canal),messages:msgs})
+    });
+    var d=await res.json();
+    if(d.error)return'Disculpa, tuve un problema técnico. Intenta de nuevo en un momento.';
+    return(d.content&&d.content[0]&&d.content[0].text)||'Disculpa, no pude procesar tu mensaje.';
+  }catch(e){return'Disculpa, necesito conexión a internet para responder. Verifica tu conexión e intenta de nuevo.';}
+}
+function parseResp(txt){
+  var clean=txt,pedido=null,redir=null;
+  var pm=txt.match(/PEDIDO_CONFIRMADO\|(.+)/);
+  if(pm){clean=txt.replace(/PEDIDO_CONFIRMADO\|.+/,'').trim();var o={};pm[1].split('|').forEach(function(p){var kv=p.split(':');if(kv[0]&&kv[1])o[kv[0].trim()]=kv[1].trim();});pedido=o;}
+  var rm=txt.match(/REDIRIGIR_ADMIN\|(.+)/);
+  if(rm){clean=txt.replace(/REDIRIGIR_ADMIN\|.+/,'').trim();var o2={};rm[1].split('|').forEach(function(p){var kv=p.split(':');if(kv[0]&&kv[1])o2[kv[0].trim()]=kv[1].trim();});redir=o2;}
+  return{clean:clean,pedido:pedido,redir:redir};
+}
+function addBub(winId,role,text){var w=eid(winId);if(!w)return;var div=document.createElement('div');if(role==='sys'){div.className='bub sys';div.textContent=text;}else{div.className='mrow'+(role==='u'?' u':'');if(role==='a')div.innerHTML='<div class="av">💧</div><div class="bub a">'+text.replace(/\n/g,'<br>')+'</div>';else div.innerHTML='<div class="bub u">'+text+'</div>';}w.appendChild(div);w.scrollTop=w.scrollHeight;}
+function showTyp(winId){var w=eid(winId);if(!w)return;var div=document.createElement('div');div.id='typ-ind';div.className='mrow';div.innerHTML='<div class="av">💧</div><div class="bub a"><div class="dots"><span></span><span></span><span></span></div></div>';w.appendChild(div);w.scrollTop=w.scrollHeight;}
+function hideTyp(){var el=eid('typ-ind');if(el)el.remove();}
+
+function rAgente(){
+  var cfg=DB.agentCfg;
+  eid('MOD').innerHTML='<div style="display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap" id="atabs"><button class="nb active" onclick="swATab(\'chat\',this)">💬 Chat WhatsApp</button><button class="nb" onclick="swATab(\'llamada\',this)">📞 Llamada</button><button class="nb" onclick="swATab(\'capturados\',this)">📋 Pedidos capturados</button><button class="nb" onclick="swATab(\'cfg\',this)">⚙️ Configurar</button></div>'
+    +'<div id="at-chat"><div class="panel"><div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1.5px solid #F0EEE8"><div class="av" style="width:40px;height:40px;font-size:18px">💧</div><div><div style="font-weight:700;font-size:15px">'+cfg.nombre+' — WATER WESG</div><div style="font-size:12px;color:#3B6D11;font-weight:600">⬤ En línea · responde en segundos</div></div></div><div class="chat-win" id="chat-win"></div><div class="quick"><button class="qbtn" onclick="qs(\'Hola, quiero pedir agua\')">Pedir agua</button><button class="qbtn" onclick="qs(\'¿Cuánto cuesta el bidón de 20 litros?\')">Precios</button><button class="qbtn" onclick="qs(\'¿En cuánto tiempo llegan?\')">Tiempo</button><button class="qbtn" onclick="qs(\'Quiero hablar con el administrador\')">Admin</button><button class="qbtn" onclick="qs(\'Tengo un problema con mi pedido\')">Reclamo</button></div><div class="irow"><input id="chat-in" placeholder="Escribe como si fueras el cliente..." onkeydown="if(event.key===\'Enter\')sendChat()"><button class="sbtn" id="sbtn-c" onclick="sendChat()">Enviar</button></div></div></div>'
+    +'<div id="at-llamada" class="hidden"><div class="panel" style="text-align:center;padding:2.5rem"><div style="font-size:48px;margin-bottom:14px">📞</div><div style="font-size:13px;color:#888;margin-bottom:8px">Simula una llamada entrante a WATER WESG</div><div id="call-st" style="color:#aaa;margin-bottom:1.5rem;font-size:13px">⬤ Esperando llamada...</div><button class="btn bp" id="call-btn" onclick="iniciarCall()" style="padding:12px 36px;font-size:15px">📞 Iniciar llamada</button></div><div id="call-area" class="hidden"><div class="panel"><div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1.5px solid #F0EEE8"><div class="av" style="width:40px;height:40px;font-size:18px">💧</div><div><div style="font-weight:700;font-size:15px">'+cfg.nombre+' — Llamada activa</div><div style="font-size:12px;color:#3B6D11;font-weight:600" id="call-timer">⬤ Duración: 0:00</div></div></div><div class="chat-win" id="call-win"></div><div class="quick"><button class="qbtn" onclick="sc(\'Quiero 2 bidones de 20 litros a mi domicilio\')">2 bidones</button><button class="qbtn" onclick="sc(\'¿En cuánto tiempo llegan?\')">Tiempo</button><button class="qbtn" onclick="sc(\'Quiero hablar con el dueño de la empresa\')">Con dueño</button><button class="qbtn" onclick="sc(\'Muchas gracias, hasta luego\')">Despedirse</button></div><div class="irow"><input id="call-in" placeholder="Escribe lo que dirías en la llamada..." onkeydown="if(event.key===\'Enter\')sendCall2()"><button class="sbtn" id="sbtn-call" onclick="sendCall2()">Enviar</button></div></div></div></div>'
+    +'<div id="at-capturados" class="hidden"><div class="panel"><div class="ptitle">Pedidos capturados por el agente ('+DB.agentPeds.length+')</div>'+(DB.agentPeds.length?DB.agentPeds.slice().reverse().map(function(p){return'<div style="background:#F8F8F5;border:1px solid #EEECEA;border-radius:10px;padding:12px 16px;margin-bottom:8px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><strong>'+p.cliente+'</strong><span class="badge btr">'+p.canal+'</span></div><div style="font-size:12px;color:#888">📦 '+p.producto+' × '+p.cantidad+' · 📍 '+p.direccion+' · 💰 '+p.total+' · 🕐 '+p.hora+'</div></div>';}).join(''):'<div style="text-align:center;color:#aaa;padding:2rem">Sin pedidos capturados aún.</div>')+'</div>'+(DB.agentRedirs.length?'<div class="panel"><div class="ptitle">Redirecciones al administrador</div>'+DB.agentRedirs.map(function(r){return'<div style="background:#EEEDFE;border-radius:8px;padding:10px 14px;margin-bottom:6px;font-size:12px;color:#534AB7"><strong>'+r.canal+'</strong> · '+r.hora+' · Motivo: '+(r.motivo||'Solicitud')+'</div>';}).join('')+'</div>':'')+'</div>'
+    +'<div id="at-cfg" class="hidden"><div class="panel"><div class="ptitle">Configurar agente virtual</div><div class="fr fr2"><div class="fg"><label>Nombre del agente</label><input id="ag-n" value="'+cfg.nombre+'"></div><div class="fg"><label>Tono</label><select id="ag-t"><option value="amable" '+(cfg.tono==='amable'?'selected':'')+'>Amable y cercano</option><option value="formal" '+(cfg.tono==='formal'?'selected':'')+'>Formal</option><option value="jovial" '+(cfg.tono==='jovial'?'selected':'')+'>Jovial</option></select></div></div><div class="fg"><label>Mensaje de bienvenida</label><input id="ag-b" value="'+cfg.bienvenida+'"></div><div class="fr fr2"><div class="fg"><label>Tiempo de entrega</label><input id="ag-ti" value="'+cfg.tiempo+'"></div><div class="fg"><label>Teléfono administrador</label><input id="ag-at" value="'+cfg.adminTel+'"></div></div><div class="fg"><label>Productos y precios</label><textarea id="ag-pr">'+cfg.productos+'</textarea></div><div style="display:flex;justify-content:flex-end"><button class="btn bp sm" onclick="guardarAgCfg()">Guardar configuración</button></div></div></div>';
+  if(chatHist.length===0){addBub('chat-win','sys','— Escribe para iniciar la conversación —');}
+  else{chatHist.forEach(function(h){addBub('chat-win',h.r==='assistant'?'a':'u',h.c);});var w=eid('chat-win');if(w)w.scrollTop=w.scrollHeight;}
+}
+function swATab(t,btn){['chat','llamada','capturados','cfg'].forEach(function(id){var el=eid('at-'+id);if(el)el.classList.add('hidden');});var el=eid('at-'+t);if(el)el.classList.remove('hidden');document.querySelectorAll('#atabs .nb').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');}
+async function sendChat(){
+  var inp=eid('chat-in'),msg=inp?inp.value.trim():'';if(!msg||isTyping)return;
+  inp.value='';isTyping=true;var btn=eid('sbtn-c');if(btn)btn.disabled=true;
+  if(chatHist.length===0){addBub('chat-win','sys','— Conversación iniciada —');addBub('chat-win','a',DB.agentCfg.bienvenida);chatHist.push({r:'assistant',c:DB.agentCfg.bienvenida});}
+  addBub('chat-win','u',msg);chatHist.push({r:'user',c:msg});showTyp('chat-win');
+  var raw=await agentCall(msg,chatHist.slice(0,-1),'chat');hideTyp();
+  var parsed=parseResp(raw);addBub('chat-win','a',parsed.clean);chatHist.push({r:'assistant',c:parsed.clean});
+  if(parsed.pedido){DB.agentPeds.push(Object.assign({},parsed.pedido,{canal:'Chat WhatsApp',hora:hora(),fecha:hoy()}));save();}
+  if(parsed.redir){DB.agentRedirs.push(Object.assign({},parsed.redir,{canal:'Chat WhatsApp',hora:hora()}));save();setTimeout(function(){addBub('chat-win','sys','— Redirigiendo al administrador: '+DB.agentCfg.adminTel+' —');},600);}
+  isTyping=false;if(btn)btn.disabled=false;
+}
+function qs(m){var i=eid('chat-in');if(i){i.value=m;sendChat();}}
+function iniciarCall(){
+  var cb=eid('call-btn');if(cb){cb.textContent='📞 En llamada...';cb.disabled=true;}
+  var cs=eid('call-st');if(cs)cs.innerHTML='<span style="color:#3B6D11;font-weight:600">⬤ Llamada activa</span>';
+  var ca=eid('call-area');if(ca)ca.classList.remove('hidden');
+  callHist=[];callSec=0;clearInterval(callTimer);
+  callTimer=setInterval(function(){callSec++;var m=Math.floor(callSec/60),s=callSec%60;var el=eid('call-timer');if(el)el.textContent='⬤ Duración: '+m+':'+String(s).padStart(2,'0');},1000);
+  addBub('call-win','sys','— Llamada conectada —');
+  var sal='¡Buenos días! Gracias por llamar a WATER WESG. Soy '+DB.agentCfg.nombre+', ¿con quién tengo el gusto y en qué le puedo ayudar?';
+  addBub('call-win','a',sal);callHist.push({r:'assistant',c:sal});
+}
+async function sendCall2(){
+  var inp=eid('call-in'),msg=inp?inp.value.trim():'';if(!msg||isTyping)return;
+  if(inp)inp.value='';isTyping=true;var btn=eid('sbtn-call');if(btn)btn.disabled=true;
+  addBub('call-win','u',msg);callHist.push({r:'user',c:msg});showTyp('call-win');
+  var raw=await agentCall(msg,callHist.slice(0,-1),'llamada');hideTyp();
+  var parsed=parseResp(raw);addBub('call-win','a',parsed.clean);callHist.push({r:'assistant',c:parsed.clean});
+  if(parsed.pedido){DB.agentPeds.push(Object.assign({},parsed.pedido,{canal:'Llamada',hora:hora(),fecha:hoy()}));save();}
+  if(parsed.redir){DB.agentRedirs.push(Object.assign({},parsed.redir,{canal:'Llamada',hora:hora()}));save();setTimeout(function(){addBub('call-win','sys','— Transfiriendo al administrador: '+DB.agentCfg.adminTel+' —');clearInterval(callTimer);},800);}
+  var desp=['gracias','hasta luego','adiós','chao','bye','hasta pronto'];
+  if(desp.some(function(d){return msg.toLowerCase().indexOf(d)>=0;})){setTimeout(function(){addBub('call-win','sys','— Llamada finalizada —');clearInterval(callTimer);var cs=eid('call-st');if(cs)cs.innerHTML='<span style="color:#aaa">⬤ Finalizada</span>';var cb=eid('call-btn');if(cb){cb.textContent='📞 Nueva llamada';cb.disabled=false;}},1200);}
+  isTyping=false;if(btn)btn.disabled=false;
+}
+function sc(m){var i=eid('call-in');if(i){i.value=m;sendCall2();}}
+function guardarAgCfg(){DB.agentCfg={nombre:eid('ag-n').value,tono:eid('ag-t').value,bienvenida:eid('ag-b').value,tiempo:eid('ag-ti').value,adminTel:eid('ag-at').value,productos:eid('ag-pr').value};chatHist=[];callHist=[];save();alert('✅ Configuración guardada.');}
+</script>
+</body>
+</html>
